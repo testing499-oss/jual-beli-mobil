@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Penjualan Mobil</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body { background: #f0f2f5; padding: 20px; }
+    .container { max-width: 900px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+    h1 { text-align: center; margin-bottom: 20px; color: #333; }
+    form { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
+    form input, form select { flex: 1 1 200px; padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
+    form button { padding: 10px 20px; border: none; background: #4facfe; color: #fff; border-radius: 5px; cursor: pointer; transition: 0.3s; }
+    form button:hover { background: #2196f3; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    table, th, td { border: 1px solid #ccc; }
+    th, td { padding: 10px; text-align: center; }
+    th { background: #4facfe; color: #fff; }
+    td button { margin: 0 5px; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; }
+    .edit-btn { background: #ffc107; color: #fff; }
+    .delete-btn { background: #f44336; color: #fff; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Penjualan Mobil</h1>
+
+  <form id="carForm">
+    <input type="text" id="merk" placeholder="Merk Mobil" required>
+    <input type="text" id="model" placeholder="Model" required>
+    <input type="number" id="tahun" placeholder="Tahun" required>
+    <input type="number" id="harga" placeholder="Harga" required>
+    <button type="submit">Simpan</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Merk</th>
+        <th>Model</th>
+        <th>Tahun</th>
+        <th>Harga</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="carList">
+      <!-- Data akan muncul di sini -->
+    </tbody>
+  </table>
+</div>
+
+<script>
+  let cars = [];
+  let editIndex = null;
+
+  const form = document.getElementById('carForm');
+  const carList = document.getElementById('carList');
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const merk = document.getElementById('merk').value;
+    const model = document.getElementById('model').value;
+    const tahun = document.getElementById('tahun').value;
+    const harga = document.getElementById('harga').value;
+
+    const carData = { merk, model, tahun, harga };
+
+    if(editIndex !== null){
+      cars[editIndex] = carData;
+      editIndex = null;
+      form.querySelector('button').textContent = 'Simpan';
+    } else {
+      cars.push(carData);
+    }
+
+    form.reset();
+    renderTable();
+  });
+
+  function renderTable(){
+    carList.innerHTML = '';
+    cars.forEach((car, index) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${index+1}</td>
+        <td>${car.merk}</td>
+        <td>${car.model}</td>
+        <td>${car.tahun}</td>
+        <td>${car.harga}</td>
+        <td>
+          <button class="edit-btn" onclick="editCar(${index})">Edit</button>
+          <button class="delete-btn" onclick="deleteCar(${index})">Hapus</button>
+        </td>
+      `;
+      carList.appendChild(row);
+    });
+  }
+
+  function editCar(index){
+    const car = cars[index];
+    document.getElementById('merk').value = car.merk;
+    document.getElementById('model').value = car.model;
+    document.getElementById('tahun').value = car.tahun;
+    document.getElementById('harga').value = car.harga;
+    editIndex = index;
+    form.querySelector('button').textContent = 'Update';
+  }
+
+  function deleteCar(index){
+    if(confirm('Apakah anda yakin ingin menghapus mobil ini?')){
+      cars.splice(index, 1);
+      renderTable();
+    }
+  }
+</script>
+
+</body>
+</html>
